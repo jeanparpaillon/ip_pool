@@ -44,7 +44,7 @@ defmodule IpPool.Manager do
   @doc """
   Reease address block for a given network.
   """
-  @spec lease(Block.id()) :: boolean
+  @spec release(Block.id()) :: boolean
   def release(block_id) do
     GenServer.call(__MODULE__, {:release, block_id})
   end
