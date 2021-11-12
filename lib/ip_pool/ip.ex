@@ -49,7 +49,7 @@ defmodule IpPool.Ip do
     addr =
       0..(tuple_size(addr) - 1)
       |> Enum.map(fn digit ->
-        elem(addr, digit) ||| 0xFF ^^^ elem(mask, digit)
+        elem(addr, digit) ||| bxor(0xFF, elem(mask, digit))
       end)
       |> List.to_tuple()
 
@@ -114,13 +114,13 @@ defmodule IpPool.Ip do
 
     mask1 = mask(masklength, digits)
     mask2 = mask(masklength + 1, digits)
-    dmask = 0..(digits - 1) |> Enum.map(&(elem(mask1, &1) ^^^ elem(mask2, &1))) |> List.to_tuple()
+    dmask = 0..(digits - 1) |> Enum.map(&(bxor(elem(mask1, &1), elem(mask2, &1)))) |> List.to_tuple()
 
     addr =
       0..(digits - 1)
       |> Enum.map(fn d ->
         case lh do
-          0 -> elem(addr, d) &&& full ^^^ elem(dmask, d)
+          0 -> elem(addr, d) &&& bxor(full, elem(dmask, d))
           1 -> elem(addr, d) ||| elem(dmask, d)
         end
       end)
@@ -165,7 +165,7 @@ defmodule IpPool.Ip do
     0..(digits - 1)
     |> Enum.map(fn d ->
       shift = Enum.min([bits, Enum.max([0, prefix - bits * d])])
-      full ^^^ (full >>> shift)
+      bxor(full, (full >>> shift))
     end)
     |> List.to_tuple()
   end

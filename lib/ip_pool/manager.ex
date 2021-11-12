@@ -218,7 +218,7 @@ defmodule IpPool.Manager do
       # No lease available in sub-block
       # Try the other side...
       nil ->
-        do_find_block(child(b, 1 ^^^ lh, s), mask, policy, s)
+        do_find_block(child(b, bxor(1, lh), s), mask, policy, s)
 
       lease ->
         lease
